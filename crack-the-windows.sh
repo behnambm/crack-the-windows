@@ -11,6 +11,12 @@ if [[ ! $(command -v chntpw) ]]; then
 	exit 127
 fi
 
+# don't continue the script if there are no NTFS partitions
+if [[ ! $(lsblk -f | grep ntfs) ]]; then
+	echo -e "$R" "\bNo NTFS partitions found." " $D" 
+	exit
+fi
+
 # get list of all NTFS file systems.
 for i in $(lsblk -if | grep ntfs | grep --invert-match 'Reserved' | awk -F '-' '{print $2}' | awk '{print $1}' | xargs -L 1 printf '/dev/%s\n'); do
 	# create a mount point in /tmp/mnt
